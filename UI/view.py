@@ -32,7 +32,7 @@ class View(ft.UserControl):
         cont = ft.Container(self._ddAnno, width=250, alignment=ft.alignment.top_left)
         row1 = ft.Row([cont, self._btnCreaGrafo], alignment=ft.MainAxisAlignment.CENTER, vertical_alignment=ft.CrossAxisAlignment.END)
 
-        self._ddCircuitoVincolante = ft.Dropdown(label="Circuito da vincolare", width=300)
+        self._ddCircuitoVincolante = ft.Dropdown(label="Circuito da vincolare", width=350)
         self._txtK = ft.TextField(label="Entro quante gare", width=200)
         row2 = ft.Row([self._ddCircuitoVincolante, self._txtK], alignment=ft.MainAxisAlignment.CENTER)
 
@@ -61,6 +61,11 @@ class View(ft.UserControl):
 
     def update_page(self):
         self._page.update()
+
+
+
+
+
 
 
 

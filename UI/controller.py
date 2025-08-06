@@ -1,5 +1,5 @@
 import flet as ft
-
+import time
 
 class Controller:
     def __init__(self, view, model):
@@ -33,12 +33,19 @@ class Controller:
         numNodes, numEdges = self._model.getGraphDetailsUfficiale()
         self._view._txt_result.controls.append(ft.Text(f"Grafo ufficiale creato con {numNodes} nodi e {numEdges} archi.\n"))
         peso_ufficiale = self._model.getPesoTotStagione()
-        self._view._txt_result.controls.append(ft.Text(f"Totale km percorsi nel calendario ufficiale {self.year}: {peso_ufficiale:.2f} km. Segue il dettaglio dei trasferimenti ufficiali:"))
+        self._view._txt_result.controls.append(ft.Text(f"Totale km percorsi nel calendario ufficiale della stagione {self.year}: {peso_ufficiale:.2f} km. \nSegue il dettaglio degli spostamenti ufficiali:"))
         archiConPeso = self._model.getArchiUfficiale(self.year)
+        i = 1
         for n1, n2, p in archiConPeso:
-            self._view._txt_result.controls.append(ft.Text(f"{n1.name}({n1.country}) → {n2.name}({n2.country}): {p:.2f} km"))
-
+            self._view._txt_result.controls.append(ft.Text(f"{i}. {n1.name}({n1.country}) → {n2.name}({n2.country}): {p:.2f} km"))
+            i+=1
         self._view.update_page()
+        # Ricostruisco il cammino ufficiale ordinato
+        cammino_ufficiale = [n1 for n1, _, _ in archiConPeso]
+        cammino_ufficiale.append(archiConPeso[-1][1])  # aggiungo ultima tappa
+        # Creo e mostro la mappa
+        self._model.creaMappa(cammino_ufficiale, nome_file="mappa_ufficiale.html")
+        self._model.apriMappa("mappa_ufficiale.html")
 
     def fillDDCircuitiVincolanti(self):
         self._view._ddCircuitoVincolante.options.clear()
@@ -74,21 +81,28 @@ class Controller:
             return
 
         # Avvio la ricerca del cammino minimo e stampo i risultati
+        tic = time.time()
         cammino, kmOttimizzati = self._model.getCamminoMin()
+        toc = time.time()
+        t = (toc-tic)/60
+        self._view._txt_result.controls.append(ft.Text(f"\nTempo impiegato per la ricerca del cammino minimo: {t:.2f} minuti"))
+
         kmUfficiali = self._model.getPesoTotStagione()
-
-        self._view._txt_result.controls.append(ft.Text(f"\nCammino ottimizzato trovato per la stagione {self.year} con {kmOttimizzati:.2f} km totali percorsi nell'ordine ottimale."))
-
         risparmio = 100 * (kmUfficiali - kmOttimizzati) / kmUfficiali
-        self._view._txt_result.controls.append(ft.Text(f"Risparmio potenziale: {risparmio:.2f}%"))
 
-        self._view._txt_result.controls.append(ft.Text("Dettaglio cammino ottimizzato:"))
+        self._view._txt_result.controls.append(ft.Text(f"\nCalendario ottimizzato trovato per la stagione {self.year} con {kmOttimizzati:.2f} km totali percorsi e risparmio del {risparmio:.2f}%. \nSegue il dettaglio degli spostamenti ottimizzati:"))
+
         for i in range(len(cammino) - 1):
             partenza = cammino[i]
             arrivo = cammino[i + 1]
             distanza = self._model.graphOttimizzato[partenza][arrivo]["weight"]
             self._view._txt_result.controls.append(ft.Text(f"{i+1}. {partenza.name}({partenza.country}) → {arrivo.name}({arrivo.country}): {distanza:.2f} km"))
 
+        # Creo e mostro la mappa del cammino ottimizzato
+        self._model.creaMappa(cammino, nome_file="mappa_ottimizzata.html")
+        self._model.apriMappa("mappa_ottimizzata.html")
+
         self._view.update_page()
+
 
 
