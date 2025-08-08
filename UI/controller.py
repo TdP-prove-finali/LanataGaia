@@ -21,6 +21,10 @@ class Controller:
 
     def handleCreaGrafo(self, e):
         self._view._txt_result.controls.clear()
+        if self.year is None:
+            self._view.create_alert("Per costruire il grafo, selezionare un anno")
+            self._view.update_page()
+            return
 
         # Costruisco i due grafi
         self._model.buildGraphUfficiale(self.year)
@@ -31,9 +35,10 @@ class Controller:
 
         # Info grafo ufficiale
         numNodes, numEdges = self._model.getGraphDetailsUfficiale()
-        self._view._txt_result.controls.append(ft.Text(f"Grafo ufficiale creato con {numNodes} nodi e {numEdges} archi.\n"))
+        self._view._txt_result.controls.append(ft.Text(f"Grafo ufficiale correttamente creato con {numNodes} nodi e {numEdges} archi.\n"))
         peso_ufficiale = self._model.getPesoTotStagione()
-        self._view._txt_result.controls.append(ft.Text(f"Totale km percorsi nel calendario ufficiale della stagione {self.year}: {peso_ufficiale:.2f} km. \nSegue il dettaglio degli spostamenti ufficiali:"))
+        co2 = 35*peso_ufficiale
+        self._view._txt_result.controls.append(ft.Text(f"Nel calendario ufficiale della stagione {self.year} sono stati percorsi circa {int(peso_ufficiale)} km, con conseguente emissione di {int(co2)} kg di CO₂. Segue il dettaglio degli spostamenti ufficiali:"))
         archiConPeso = self._model.getArchiUfficiale(self.year)
         i = 1
         for n1, n2, p in archiConPeso:
@@ -70,27 +75,22 @@ class Controller:
                 k = int(k_str)
                 self._model.setVincoloCircuito(self.circuitoVincolante, k-1)
             except ValueError:
-                self._view._txt_result.controls.append(ft.Text("Inserire un numero intero valido per K"))
+                self._view.create_alert("Inserire un numero intero valido per K")
                 self._view.update_page()
                 return
 
         # Caso 3: inserito solo un vincolo (errore, devono esserci entrambi per funzionare)
         else:
-            self._view._txt_result.controls.append(ft.Text("Se si vuole inserire un vincolo, selezionare sia un circuito sia un valore per K"))
+            self._view.create_alert("Se si vuole inserire un vincolo, selezionare sia un circuito sia entro quante gare deve essere visitato")
             self._view.update_page()
             return
 
         # Avvio la ricerca del cammino minimo e stampo i risultati
-        tic = time.time()
         cammino, kmOttimizzati = self._model.getCamminoMin()
-        toc = time.time()
-        t = (toc-tic)/60
-        self._view._txt_result.controls.append(ft.Text(f"\nTempo impiegato per la ricerca del cammino minimo: {t:.2f} minuti"))
-
         kmUfficiali = self._model.getPesoTotStagione()
         risparmio = 100 * (kmUfficiali - kmOttimizzati) / kmUfficiali
-
-        self._view._txt_result.controls.append(ft.Text(f"\nCalendario ottimizzato trovato per la stagione {self.year} con {kmOttimizzati:.2f} km totali percorsi e risparmio del {risparmio:.2f}%. \nSegue il dettaglio degli spostamenti ottimizzati:"))
+        co2 = 35 * kmOttimizzati
+        self._view._txt_result.controls.append(ft.Text(f"\nCalendario ottimizzato trovato per la stagione {self.year} percorrendo circa {int(kmOttimizzati)} km totali, con {int(co2)} kg di CO₂ emessi e risparmio del {int(risparmio)}% sulle emissioni. Segue il dettaglio degli spostamenti ottimizzati:"))
 
         for i in range(len(cammino) - 1):
             partenza = cammino[i]

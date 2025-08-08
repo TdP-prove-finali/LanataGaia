@@ -144,7 +144,7 @@ class Model:
                 location=[circuito.lat, circuito.lng],
                 popup=label,
                 tooltip=label,
-                icon=folium.Icon(color="blue", icon="info-sign")
+                icon=folium.Icon(color="red", icon="info-sign")
             ).add_to(mappa)
         # poi creo le rette che li collegano
         for idx in range(len(cammino) - 1):
@@ -152,7 +152,7 @@ class Model:
             c2 = cammino[idx + 1]
             folium.PolyLine(
                 locations=[[c1.lat, c1.lng], [c2.lat, c2.lng]],
-                color='blue',
+                color='black',
                 weight=2
             ).add_to(mappa)
 
