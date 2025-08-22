@@ -37,8 +37,8 @@ class Controller:
         numNodes, numEdges = self._model.getGraphDetailsUfficiale()
         self._view._txt_result.controls.append(ft.Text(f"Grafo ufficiale correttamente creato con {numNodes} nodi e {numEdges} archi.\n"))
         peso_ufficiale = self._model.getPesoTotStagione()
-        co2 = 35*peso_ufficiale
-        self._view._txt_result.controls.append(ft.Text(f"Nel calendario ufficiale della stagione {self.year} sono stati percorsi circa {int(peso_ufficiale)} km, con conseguente emissione di {int(co2)} kg di CO₂. Segue il dettaglio degli spostamenti ufficiali:"))
+        co2 = (35*peso_ufficiale)/1000
+        self._view._txt_result.controls.append(ft.Text(f"Nel calendario ufficiale della stagione {self.year} sono stati percorsi circa {int(peso_ufficiale)} km, con conseguente emissione di {int(co2)} tonnellate di CO₂. Segue il dettaglio degli spostamenti ufficiali:"))
         archiConPeso = self._model.getArchiUfficiale(self.year)
         i = 1
         for n1, n2, p in archiConPeso:
@@ -89,8 +89,8 @@ class Controller:
         cammino, kmOttimizzati = self._model.getCamminoMin()
         kmUfficiali = self._model.getPesoTotStagione()
         risparmio = 100 * (kmUfficiali - kmOttimizzati) / kmUfficiali
-        co2 = 35 * kmOttimizzati
-        self._view._txt_result.controls.append(ft.Text(f"\nCalendario ottimizzato trovato per la stagione {self.year} percorrendo circa {int(kmOttimizzati)} km totali, con {int(co2)} kg di CO₂ emessi e risparmio del {int(risparmio)}% sulle emissioni. Segue il dettaglio degli spostamenti ottimizzati:"))
+        co2 = (35 * kmOttimizzati)/1000
+        self._view._txt_result.controls.append(ft.Text(f"\nCalendario ottimizzato trovato per la stagione {self.year} percorrendo circa {int(kmOttimizzati)} km totali, con {int(co2)} tonnellate di CO₂ emesse e risparmio del {int(risparmio)}% sulle emissioni. Segue il dettaglio degli spostamenti ottimizzati:"))
 
         for i in range(len(cammino) - 1):
             partenza = cammino[i]
