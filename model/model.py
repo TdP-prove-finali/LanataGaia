@@ -52,7 +52,6 @@ class Model:
         self.graphOttimizzato = nx.Graph()  # grafo non orientato
         circuiti = self.get_circuiti(anno)
         self.graphOttimizzato.add_nodes_from(circuiti) # aggiungo tutti i circuiti dell'anno selezionato al grafo
-
         # aggiungo archi tra tutte le coppie (grafo completo)
         for i in range(len(circuiti)):
             for j in range(i + 1, len(circuiti)):
@@ -87,7 +86,6 @@ class Model:
             if self.score is None or self.getScore(parziale) < self.score:
                 self.listaOttimizzata = copy.deepcopy(parziale)
                 self.score = self.getScore(parziale)
-
         else:
             for v in nx.neighbors(self.graphOttimizzato, parziale[-1]):
                 if self.condizione(parziale, v):
@@ -98,23 +96,19 @@ class Model:
     def condizione(self, parziale, v):
         if v in parziale:
             return False
-
         # se non ho vincoli posso aggiungere il nodo
         if self.vincolo_circuito is None or self.vincolo_k is None:
             return True
-
         # boolean per gestire l'inserimento del circuito vincolante
         circuito = False
         # se il circuito è già nel cammino allora diventa True
         for nodo in parziale:
             if nodo.circuitId == self.vincolo_circuito.circuitId:
                 circuito = True
-
         # se la posizione attuale è pari a K e il circuito ancora non è presente lo aggiungo per forza
         if len(parziale) == self.vincolo_k:
             if not circuito:
-                return v.circuitId == self.vincolo_circuito.circuitId # True se v è il circuito vincolante e False altrimenti
-
+                return v.circuitId == self.vincolo_circuito.circuitId # True se v è il circuito vincolante, False altrimenti
         if len(parziale) > self.vincolo_k:
             if not circuito:
                 return False
@@ -133,7 +127,6 @@ class Model:
     def creaMappa(self, cammino, nome_file="mappa.html"):
         if not cammino:
             return
-
         mappa = folium.Map(location=[cammino[0].lat, cammino[0].lng], zoom_start=2)
         # prima creo i punti sulla mappa con le info
         for i in range(len(cammino)):

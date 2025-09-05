@@ -37,7 +37,7 @@ class View(ft.UserControl):
 
     def load_interface(self):
         # title
-        self._title = ft.Text("Ottimizzazione del trasporto attrezzature nel calendario di F1", color="#d90429", font_family="Roboto Mono", size=18, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER)
+        self._title = ft.Text("Ottimizzazione logistica nel calendario F1", color="#d90429", font_family="Verdana", size=20, weight=ft.FontWeight.BOLD, text_align=ft.TextAlign.CENTER)
 
         # row1
         self._ddAnno = ft.Dropdown(label="Anno", dense=True, border_color="#d90429", bgcolor="#1e1e1e", color="white", label_style=ft.TextStyle(color="white"), width=100)
